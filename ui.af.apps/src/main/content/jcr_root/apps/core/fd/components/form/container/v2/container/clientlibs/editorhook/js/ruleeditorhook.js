@@ -34,7 +34,8 @@
         if (!formContainerPath) {
             showAlert();
         } else {
-            let ruleEditorUri = '/aem/af/expeditor.html' + getFormContainerPath(editable) + "?fieldPath=" + editable.path + "&fieldId=" + getFieldId(editable);
+            // let ruleEditorUri = '/aem/af/expeditor.html' + getFormContainerPath(editable) + "?fieldPath=" + editable.path + "&fieldId=" + getFieldId(editable);
+            let ruleEditorUri = '/ui/solutions/livecycle-ruleeditor-ui-service/static-assets/index.html?formpath=' + getFormContainerPath(editable) + "&fieldpath=" + editable.path + "&fieldid=" + getFieldId(editable);
             ruleEditorFrame.setAttribute('src', ruleEditorUri);
             ruleEditorFrame.setAttribute('title', 'AF Rule Editor');
             ruleEditorFrame.style.display = "block";
