@@ -36,6 +36,7 @@
         } else {
             let ruleEditorUri = '/aem/af/expeditor.html' + getFormContainerPath(editable) + "?fieldPath=" + editable.path + "&fieldId=" + getFieldId(editable);
             if (true || Granite.Toggles.isEnabled("FT_FORMS-14068")) {
+            // if (false) {
                 const lang = document.documentElement.lang || 'en';
                 if (window.isOriginatorUnifiedShellEnabled) { // author in unified-shell then load spa using /ui
                     ruleEditorUri = '/ui/solutions/livecycle-ruleeditor-ui-service/static-assets/index.html?formpath=' + getFormContainerPath(editable) + "&fieldpath=" + editable.path + "&fieldid=" + getFieldId(editable) + "&lang=" + lang;
@@ -80,10 +81,8 @@
         fieldDefinitionId && ruleMetaInfoElement.setAttribute('data-fieldid', fieldDefinitionId);
         htmlDom.getElementById('rule-meta-info') && htmlDom.getElementById('rule-meta-info').replaceWith(ruleMetaInfoElement);
         htmlDom.documentElement.lang = lang;
-
-        let serializer = new XMLSerializer();
-        let htmlString = serializer.serializeToString(htmlDom);
-        return htmlString;
+        
+        return htmlDom.documentElement.outerHTML;
     }
 
     function getContent(fetchUrl, dataType) {
