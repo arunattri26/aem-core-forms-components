@@ -39,12 +39,11 @@
             // if (false) {
                 const lang = document.documentElement.lang || 'en';
                 if (window.isOriginatorUnifiedShellEnabled) { // author in unified-shell then load spa using /ui
-                    ruleEditorUri = '/ui/solutions/livecycle-ruleeditor-ui-service/static-assets/index.html?formpath=' + getFormContainerPath(editable) + "&fieldpath=" + editable.path + "&fieldid=" + getFieldId(editable) + "&lang=" + lang;
+                    ruleEditorUri = '/ui/solutions/livecycle-ruleeditor-ui-service/index.html?formpath=' + getFormContainerPath(editable) + "&fieldpath=" + editable.path + "&fieldid=" + getFieldId(editable) + "&lang=" + lang;
                     ruleEditorFrame.setAttribute('src', ruleEditorUri);
                 } else { // if author is not using unified shell - local setup/admin login instead of IMS then get markup and assets from spa and replace innerhtml
                     // The spa-html-repload route provides the CORS header to HTML files, that's how Unified Shell creates srcDoc
-                    ruleEditorUri = '/solutions/livecycle-ruleeditor-ui-service/static-assets/index.html';
-                    // ruleEditorUri = '/solutions/livecycle-ruleeditor-ui-service/spa-html-preload/index.html';
+                    ruleEditorUri = '/solutions/livecycle-ruleeditor-ui-service/spa-html-preload/index.html';
                     const ruleEditorContent = _openRuleEditorFromSPA(ruleEditorUri, getFormContainerPath(editable), editable.path, getFieldId(editable), lang);
                     ruleEditorFrame.setAttribute('srcdoc', ruleEditorContent);
                 }
