@@ -63,8 +63,7 @@
     }
 
     function _openRuleEditorFromSPA(ruleEditorUri, formPath, selectedFieldPath, fieldDefinitionId, lang) {
-        //TODO: Make it prod:https://experience.adobe.com before release
-        const experienceEndPoint = 'https://experience-stage.adobe.com';
+        const experienceEndPoint = 'https://experience.adobe.com';
         const fetchUrl =`${experienceEndPoint}${ruleEditorUri}`;
         console.debug('fetchUrl', fetchUrl);
         const fetchedContent = getContent(fetchUrl);
