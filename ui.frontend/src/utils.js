@@ -313,6 +313,80 @@ class Utils {
     }
 
     /**
+     * Registers custom functions from form json.
+     * @param {object} formJson - The Sling model exporter representation of the form
+     */
+    static async registerCustomFunctionsV3(formJson) {
+        // Extract custom function names from form events
+        const extractFunctionNames = (formJson) => {
+            const functionNames = new Set();
+            
+            // Helper function to extract function names from event strings
+            const extractFromEventString = (eventString) => {
+                // Match patterns like functionName() with optional parameters
+                const functionPattern = /(\w+)\s*\(/g;
+                let match;
+                
+                while ((match = functionPattern.exec(eventString)) !== null) {
+                    // Add the function name to our set
+                    functionNames.add(match[1]);
+                }
+            };
+            
+            // Process events at the form level
+            if (formJson.events) {
+                Object.values(formJson.events).forEach(eventArray => {
+                    eventArray.forEach(eventString => {
+                        extractFromEventString(eventString);
+                    });
+                });
+            }
+            
+            // Recursively process events in form items
+            const processItems = (items) => {
+                if (!items) return;
+                
+                Object.values(items).forEach(item => {
+                    if (item.events) {
+                        Object.values(item.events).forEach(eventArray => {
+                            eventArray.forEach(eventString => {
+                                extractFromEventString(eventString);
+                            });
+                        });
+                    }
+                    
+                    // Process nested items if they exist
+                    if (item[':items']) {
+                        processItems(item[':items']);
+                    }
+                });
+            };
+            
+            if (formJson[':items']) {
+                processItems(formJson[':items']);
+            }
+            
+            // Filter out known keywords that aren't custom functions
+            const knownKeywords = ['if', 'contains', 'dispatchEvent', 'false', 'true'];
+            return Array.from(functionNames).filter(name => !knownKeywords.includes(name));
+        };
+        
+        // Get function names from form JSON before fetching config
+        const customFunctionNames = extractFunctionNames(formJson);
+        console.debug("Extracted custom function names from form JSON:", customFunctionNames);
+        
+        if (customFunctionNames.length > 0) {
+            const funcObj = customFunctionNames.reduce((accumulator, funcName) => {
+                if (window[funcName]) {
+                    accumulator[funcName] = window[funcName];
+                }
+                return accumulator;
+            }, {});
+            FunctionRuntime.registerFunctions(funcObj);
+        }
+    }
+
+    /**
      * Sets up the Form Container.
      * @param {Function} createFormContainer - The function to create a form container.
      * @param {string} formContainerSelector - The CSS selector to identify the form container.
@@ -350,7 +424,7 @@ class Utils {
                     _formJson = await HTTPAPILayer.getFormDefinition(_path, _pageLang);
                 }
                 console.debug("fetched model json", _formJson);
-                await this.registerCustomFunctionsV2( _formJson);
+                await this.registerCustomFunctionsV3( _formJson);
                 await this.registerCustomFunctionsByUrl(customFunctionUrl);
                 const urlSearchParams = new URLSearchParams(window.location.search);
                 const params = Object.fromEntries(urlSearchParams.entries());
@@ -395,7 +469,7 @@ class Utils {
                 const functions = [];
                 for (const name of keys) {
                     const funcDef = customFunctionModule[name];
-                    if (typeof funcDef === 'function') {
+                    if (typeof funcDef === 'function' && !FunctionRuntime.customFunctions[name]) {
                         functions[name] = funcDef;
                     }
                 }
