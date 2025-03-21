@@ -366,9 +366,7 @@ class Utils {
                 processItems(formJson[':items']);
             }
             
-            // Filter out known keywords that aren't custom functions
-            const knownKeywords = ['if', 'contains', 'dispatchEvent', 'false', 'true'];
-            return Array.from(functionNames).filter(name => !knownKeywords.includes(name));
+            return Array.from(functionNames);
         };
         
         // Get function names from form JSON before fetching config
